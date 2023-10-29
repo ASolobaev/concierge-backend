@@ -1,0 +1,31 @@
+@startuml overview
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/common.puml
+!includeurl ICONURL/devicons/postgresql.puml
+!includeurl ICONURL/material/queue.puml
+
+Container_Boundary(userService, "Пользователи") {
+  Component(authController, "Аутентификация и авторизация", "Component: nest.js controller", "Управление доступом в сервис")
+  Component(accountController, "Информация о пользователе", "Component: nest.js controller", "Получение данных о пользователе")
+  Component(roleController, "Ролевая модель", "Component: nest.js controller", "Хранение ролевой модели пользователя")
+  Component(authService, "Сервис доступа", "Component: nest.js service", "Бизнес логика доступа в систему")
+  Component(accountService, "Сервис учетных данных", "Component: nest.js service", "Бизнес логика управления данными пользователя")
+  Component(roleService, "Сервис ролевой модели", "Component: nest.js service", "Бизнес логика управления ролевой моделью")
+}
+
+ContainerDb(database, "База данных", "Postgres", "Хранение данных пользователя", postgresql)
+ContainerQueue(queue, "Очередь", "RabbitMQ", "Ассинхронное взаимодействие сервисов", queue)
+
+Rel(authController, authService, "Использует")
+Rel(accountController, accountService, "Использует")
+Rel(roleController, roleService, "Использует")
+Rel(accountService, database, "Чтение и запись данных пользователя", "sql, tls")
+Rel(authService, database, "Чтение и запись данных о сессиях пользователя", "sql, tls")
+
+Rel(authService, queue, "Запись данных о старте/завершении сессии пользователя")
+BiRel(roleService, queue, "Чтение данных об изменении статусов по договору")
+
+@enduml

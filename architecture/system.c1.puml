@@ -1,0 +1,25 @@
+@startuml overview
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/common.puml
+
+!includeurl ICONURL/font-awesome/users.puml
+
+
+Person(guest, "Посетитель", "Потенциальный пользователь сервиса", users)
+Person(renter, "Арендатор", "Пользователь снимающий недвижимость с использованием сервиса", users)
+Person(landlord, "Арендодатель", "Пользователь сдающий свою недвижимость через сервис", users)
+
+Person(employee, "Сотрудник сервиса", "Сотрудники сервиса обеспечивающие его работу", users)
+Person(support, "Поддержка", "Техническая поддержка сервиса", users)
+
+System(system, "Консьерж", "Сервис аренды квартир и сопровождения арендуемого жилья")
+
+Rel(guest, system, "Поиск недвижимости, подписание договора аренды")
+Rel(renter, system, "Оплаты аренды, передача показаний приборов учета, вызов ремонтных служб, связь с арендодателем")
+Rel(landlord, system, "Получение статистики по объекту, прекращение договора, связь с арендатором, планирование визитов")
+Rel(employee, system, "Сопрровождение процесса аренды, работа с техническими службами")
+Rel(support, system, "Аудит системы, работа с тикетами технических сбоев")
+
+@enduml

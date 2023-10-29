@@ -1,0 +1,47 @@
+@startuml overview
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/common.puml
+
+!includeurl ICONURL/font-awesome/users.puml
+!includeurl ICONURL/devicons/nodejs.puml
+!includeurl ICONURL/devicons/postgresql.puml
+!includeurl ICONURL/devicons/mongodb.puml
+!includeurl ICONURL/material/queue.puml
+
+Person(guest, "Посетитель", "Потенциальный пользователь сервиса", users)
+Person(renter, "Арендатор", "Пользователь снимающий недвижимость с использованием сервиса", users)
+Person(landlord, "Арендодатель", "Пользователь сдающий свою недвижимость через сервис", users)
+
+Person(employee, "Сотрудник сервиса", "Сотрудники сервиса обеспечивающие его работу", users)
+Person(support, "Поддержка", "Техническая поддержка сервиса", users)
+
+System_Boundary(system, "Консьерж") {
+  Container(userService, "Пользователи", "Node.js", "Хранение данных пользователей системы", nodejs)
+  Container(showcaseService, "Витрина", "Node.js", "Витрина объектов недвижимости", nodejs)
+  Container(contractService, "Документы", "Node.js", "Хранение документов по аренде и обслуживанию", nodejs)
+  Container(paymentService, "Платежи", "Node.js", "Хранение и обработка платежей", nodejs)
+  Container(ticketService, "Заявки", "Node.js", "Хранение заявок от пользователей по обслуживанию договоров и объектов")
+  Container(notificationService, "Уведомления", "Node.js", "Рассылка уведомлений пользователям", nodejs)
+
+  ContainerDb(postgres, "База данных", "Postges", "Хранение структурированной информации о пользователях, заявках и платежах", postgresql)
+  ContainerDb(mongo, "База данных", "Mongo", "Хранение документов по объектам, объектов с витрины", mongodb)
+  ContainerQueue(rabbit, "Очередь", "RabbitMQ", "Ассинхронные взаимодействия модулей системы", queue)
+}
+
+System_Ext(telephoneNetwork, "Телефонная сеть", "Обеспечение телефонной связи с пользователями системы")
+System_Ext(bank, "Банк", "Работа с платежами пользователей")
+
+Rel(userService, postgres, "Хранение данных", "sql, tls")
+Rel(paymentService, postgres, "Хранение данных", "sql, tls")
+Rel(ticketService, postgres, "Хранение данных", "sql, tls")
+Rel(notificationService, postgres, "Хранение данных", "sql, tls")
+
+Rel(showcaseService, mongo, "Хранение данных", "tls")
+Rel(contractService, mongo, "Хранение данных", "tls")
+
+Rel(paymentService, bank, "Обработка платежей", "https, mtls")
+Rel(ticketService, telephoneNetwork, "Отправка звонков", "https, mtls")
+
+@enduml
