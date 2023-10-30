@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# sensetive files
+*.yml
+
 # Logs
 logs
 *.log
